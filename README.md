@@ -84,7 +84,7 @@ Sebelum menjalankan aplikasi, pastikan perangkat sudah memiliki:
 ### 1. Clone Repository
 
 ```bash
-git clone URL_REPOSITORY_GITHUB
+git clone https://github.com/daffarm200-arch/TukarLayak.git
 cd TukarLayak
 ```
 
