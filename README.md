@@ -84,7 +84,7 @@ Sebelum menjalankan aplikasi, pastikan perangkat sudah memiliki:
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/daffarm200-arch/TukarLayak.git
+git clone https://github.com/daffarm200-arch/TukarLayak
 cd TukarLayak
 ```
 
@@ -185,7 +185,7 @@ Kredensial demo untuk demonstrasi aplikasi akan disediakan secara terpisah dan t
 ## Repository dan Deployment
 
 - Repository GitHub: Akan ditambahkan setelah publikasi repository.
-- URL aplikasi publik: Akan ditambahkan setelah deployment.
+- URL aplikasi publik: Akan ditambahkan setelah deployment
 - Protokol akses: HTTPS.
 
 ## Pengembangan Selanjutnya
