@@ -173,5 +173,195 @@
         <p>&copy; {{ date('Y') }} <strong>TukarLayak</strong>. Platform Pertukaran & Berbagi Barang Layak Pakai.</p>
     </footer>
 
+    <!-- Global Confirmation Modal -->
+    <div id="app-confirm-modal"
+         class="fixed inset-0 z-[100] hidden items-center justify-center p-4"
+         aria-hidden="true">
+
+        <!-- Overlay -->
+        <button type="button"
+                data-modal-close
+                class="absolute inset-0 bg-slate-950/60 backdrop-blur-[3px]"
+                aria-label="Tutup modal">
+        </button>
+
+        <!-- Modal -->
+        <div class="relative w-full max-w-md rounded-3xl bg-[#FAFCFA] p-6 shadow-2xl"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="app-confirm-title"
+             aria-describedby="app-confirm-message">
+
+            <div class="flex flex-col items-center text-center">
+
+                <!-- Icon -->
+                <div class="flex h-16 w-16 items-center justify-center rounded-full bg-[#FCE9E8] text-[#B94B45]">
+                    <svg class="h-8 w-8"
+                         fill="none"
+                         stroke="currentColor"
+                         viewBox="0 0 24 24">
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="1.8"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16"/>
+                    </svg>
+                </div>
+
+                <h2 id="app-confirm-title"
+                    class="mt-4 text-xl font-bold text-[#253B32]">
+                    Hapus Barang?
+                </h2>
+
+                <p id="app-confirm-message"
+                   class="mt-2 text-sm leading-relaxed text-[#718078]">
+                    Apakah kamu yakin ingin menghapus data ini?
+                    Tindakan ini tidak dapat dibatalkan.
+                </p>
+
+                <!-- Item Information -->
+                <div id="app-confirm-item-wrapper"
+                     class="mt-5 hidden w-full rounded-xl border border-[#E1EAE3] bg-[#F0F4F1] p-4 text-left">
+
+                    <p id="app-confirm-item-label"
+                       class="text-[10px] font-bold uppercase tracking-wider text-[#87948C]">
+                        Barang yang akan dihapus
+                    </p>
+
+                    <p id="app-confirm-item"
+                       class="mt-1 font-semibold text-[#253B32]">
+                    </p>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="mt-7 grid grid-cols-2 gap-3">
+
+                <button type="button"
+                        data-modal-close
+                        class="rounded-xl bg-[#E8EEE9] px-4 py-3 text-sm font-semibold text-[#43564B] transition hover:bg-[#DCE6DE] focus:outline-none focus:ring-2 focus:ring-[#A3B9A8]">
+                    Batal
+                </button>
+
+                <button type="button"
+                        id="app-confirm-submit"
+                        class="rounded-xl bg-[#B94B45] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#A33D38] focus:outline-none focus:ring-2 focus:ring-[#D98D88] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60">
+                    Ya, Hapus
+                </button>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal Script -->
+    <script>
+        (() => {
+            const modal = document.getElementById('app-confirm-modal');
+
+            if (!modal) return;
+
+            const title = document.getElementById('app-confirm-title');
+            const message = document.getElementById('app-confirm-message');
+            const itemWrapper = document.getElementById('app-confirm-item-wrapper');
+            const itemLabel = document.getElementById('app-confirm-item-label');
+            const itemName = document.getElementById('app-confirm-item');
+            const confirmButton = document.getElementById('app-confirm-submit');
+
+            const closeButtons = modal.querySelectorAll('[data-modal-close]');
+
+            let pendingForm = null;
+            let previousFocus = null;
+            let isSubmitting = false;
+
+            function openModal(form) {
+                pendingForm = form;
+                previousFocus = document.activeElement;
+                isSubmitting = false;
+
+                title.textContent = form.dataset.confirmTitle || 'Konfirmasi';
+                message.textContent = form.dataset.confirmMessage || 'Apakah kamu yakin ingin melanjutkan?';
+
+                const item = form.dataset.confirmItem || '';
+                const kind = form.dataset.confirmKind || 'Barang';
+
+                itemName.textContent = item;
+                itemLabel.textContent = `${kind} yang akan dihapus`;
+                itemWrapper.classList.toggle('hidden', !item);
+
+                confirmButton.textContent = form.dataset.confirmButton || 'Ya, Hapus';
+
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                modal.setAttribute('aria-hidden', 'false');
+
+                document.body.classList.add('overflow-hidden');
+
+                closeButtons[0]?.focus();
+            }
+
+            function closeModal() {
+                if (isSubmitting) return;
+
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                modal.setAttribute('aria-hidden', 'true');
+
+                document.body.classList.remove('overflow-hidden');
+
+                pendingForm = null;
+
+                if (previousFocus) {
+                    previousFocus.focus();
+                    previousFocus = null;
+                }
+            }
+
+            document.addEventListener('submit', function (event) {
+                const form = event.target;
+
+                if (!(form instanceof HTMLFormElement)) return;
+                if (!form.matches('form[data-app-confirm]')) return;
+
+                if (form.dataset.confirmApproved === 'true') {
+                    delete form.dataset.confirmApproved;
+                    return;
+                }
+
+                event.preventDefault();
+                openModal(form);
+            });
+
+            confirmButton.addEventListener('click', function () {
+                if (!pendingForm || isSubmitting) return;
+
+                const form = pendingForm;
+
+                isSubmitting = true;
+                confirmButton.disabled = true;
+                confirmButton.textContent = 'Memproses...';
+
+                form.dataset.confirmApproved = 'true';
+
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('overflow-hidden');
+
+                pendingForm = null;
+
+                form.requestSubmit();
+            });
+
+            closeButtons.forEach(button => {
+                button.addEventListener('click', closeModal);
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+                    closeModal();
+                }
+            });
+        })();
+    </script>
+
 </body>
 </html>

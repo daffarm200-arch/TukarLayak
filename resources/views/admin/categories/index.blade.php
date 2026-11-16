@@ -81,7 +81,7 @@
                                 </button>
                             @else
                                 <form method="POST" action="{{ route('admin.categories.destroy', $category) }}"
-                                      onsubmit="return confirm('Yakin ingin menghapus kategori \'{{ addslashes($category->name) }}\'? Tindakan ini tidak dapat dibatalkan.')">
+                                      data-app-confirm data-confirm-title="Hapus Kategori?" data-confirm-message="Kategori ini akan dihapus dari TukarLayak. Tindakan ini tidak dapat dibatalkan." data-confirm-item="{{ $category->name }}" data-confirm-kind="Kategori" data-confirm-button="Ya, Hapus">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"

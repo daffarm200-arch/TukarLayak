@@ -128,7 +128,7 @@
                                 Edit Barang Ini
                             </a>
 
-                            <form method="POST" action="{{ route('items.destroy', $item) }}" onsubmit="return confirm('Apakah Anda yakin ingin menghapus barang ini?');" class="inline">
+                            <form method="POST" action="{{ route('items.destroy', $item) }}" data-app-confirm data-confirm-title="Hapus Barang?" data-confirm-message="Barang ini akan dihapus dari TukarLayak. Tindakan ini tidak dapat dibatalkan." data-confirm-item="{{ $item->title }}" data-confirm-kind="Barang" data-confirm-button="Ya, Hapus" class="inline">
                                 @csrf
                                 @method('DELETE')
                                 <button
